@@ -207,7 +207,16 @@
   // Determine whether any of the elements pass a truth test. If no iterator is
   // provided, provide a default one
   _.some = function(collection, iterator) {
+    if (arguments.length < 2) {
+      iterator = _.identity;
+
+    }
     // TIP: There's a very clever way to re-use every() here.
+    return !(_.every(collection, function(item) {
+      return !iterator(item);
+
+    }))
+
   };
 
 
@@ -230,11 +239,28 @@
   //     bla: "even more stuff"
   //   }); // obj1 now contains key1, key2, key3 and bla
   _.extend = function(obj) {
+    for(var i = 0; i< arguments.length; i++){
+      for(var j in arguments[i]){
+        obj[j] = arguments[i][j];
+      }
+    }
+    return obj;
+
   };
 
   // Like extend, but doesn't ever overwrite a key that already
   // exists in obj
   _.defaults = function(obj) {
+    
+    for(var i = 0; i< arguments.length; i++){
+      for(var j in arguments[i]){
+        if (obj[j] === undefined) {
+          obj[j] = arguments[i][j];
+        }
+      }
+    }
+    return obj;
+
   };
 
 
@@ -278,6 +304,19 @@
   // already computed the result for the given argument and return that value
   // instead if possible.
   _.memoize = function(func) {
+    var memo = {};
+    return function(x){
+      if (x in memo){
+        return memo[x];
+      }
+      else {
+        var result = func.apply(this, arguments);
+        memo[x] = result;
+        return result;
+      }
+    }
+
+
   };
 
   // Delays a function for the given number of milliseconds, and then calls
@@ -287,6 +326,10 @@
   // parameter. For example _.delay(someFunction, 500, 'a', 'b') will
   // call someFunction('a', 'b') after 500ms
   _.delay = function(func, wait) {
+    var args = Array.prototype.slice.call(arguments, 2);
+    setInterval(function() {
+      return func.apply(this, args);
+    }, wait);
   };
 
 
@@ -301,6 +344,13 @@
   // input array. For a tip on how to make a copy of an array, see:
   // http://mdn.io/Array.prototype.slice
   _.shuffle = function(array) {
+    var copy = array.slice(0);
+    var newArray = [];
+    for(var i = 0, length = copy.length; i<length; i++){
+      var ind = Math.random() * (copy.length);
+      newArray.push(copy.splice(ind, 1)[0]);
+    }
+    return newArray;
   };
 
 
